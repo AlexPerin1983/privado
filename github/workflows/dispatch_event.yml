@@ -1,0 +1,24 @@
+name: Dispatch Event
+
+on:
+  push:
+    paths:
+      - dispatch_trigger.txt
+
+jobs:
+  dispatch-event:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Dispatch to Public Repo
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+      run: |
+        USER_INPUT=$(cat dispatch_trigger.txt)
+        curl -X POST -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: token $GITHUB_TOKEN" \
+          https://api.github.com/repos/AlexPerin1983/publico/dispatches \
+          -d '{"event_type":"generate_review","client_payload":{"userInput":"'"$USER_INPUT"'"}}'
